@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Paulas Chemie Experiment</title>
+<style>
+body{
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+  text-align:center;
+  padding:20px;
+}
+h1{ color:#38bdf8; }
+#elements, #lab{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+  margin:20px;
+}
+.item{
+  background:#2563eb;
+  padding:10px 14px;
+  border-radius:8px;
+  cursor:pointer;
+  user-select:none;
+}
+.item:hover{
+  background:#1d4ed8;
+}
+#lab{
+  border:2px dashed white;
+  min-height:60px;
+  padding:10px;
+}
+button{
+  padding:10px 18px;
+  border:none;
+  border-radius:8px;
+  background:#22c55e;
+  color:white;
+  cursor:pointer;
+  margin:5px;
+}
+#result{
+  margin-top:20px;
+  font-size:18px;
+  min-height:24px;
+}
+.discovered{
+  background:#9333ea;
+  padding:6px 10px;
+  border-radius:6px;
+  margin:4px;
+  display:inline-block;
+}
+#gameComplete{
+  margin-top:30px;
+  font-size:24px;
+  color:#facc15;
+  font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<h1>⚗️ Paulas Chemie Experiment</h1>
+<p>Mische Stoffe und entdecke neue Materialien!</p>
+
+<h2>Elemente & Stoffe</h2>
+<div id="elements"></div>
+
+<h2>Labor</h2>
+<div id="lab"></div>
+
+<button onclick="mix()">Mischen</button>
+<button onclick="clearLab()">Labor leeren</button>
+
+<div id="result"></div>
+<h2>Entdeckungen</h2>
+<div id="discoveries"></div>
+<div id="gameComplete"></div>
+
+<script>
+// Globale Variablen
+let elements = ["Wasserstoff","Sauerstoff","Natrium","Chlor","Kohlenstoff"];
+let lab = [];
+let discovered = [];
+
+// Rezepte (alphabetisch sortiert für Zuverlässigkeit)
+const recipes = {
+  "Chlor+Natrium":"Salz",
+  "Kohlenstoff+Sauerstoff":"Kohlendioxid",
+  "Kohlenstoff+Wasser":"Alkohol",
+  "Alkohol+Sauerstoff":"Feuer",
+  "Sauerstoff+Wasserstoff":"Wasser",
+  "Kohlenstoff+Wasserstoff":"Methan",
+  "Feuer+Salz":"Paulas Chemie Experiment"
+};
+
+// Elemente rendern
+function renderElements(){
+  const elementsDiv = document.getElementById("elements");
+  elementsDiv.innerHTML="";
+  elements.forEach(el=>{
+    const div=document.createElement("div");
+    div.className="item";
+    div.textContent=el;
+    div.onclick=()=>addToLab(el);
+    elementsDiv.appendChild(div);
+  });
+}
+
+// Element ins Labor
+function addToLab(el){
+  if(lab.length>=2){
+    document.getElementById("result").textContent="Nur zwei Stoffe gleichzeitig mischen!";
+    return;
+  }
+  lab.push(el);
+  renderLab();
+}
+
+// Labor rendern
+function renderLab(){
+  const labDiv=document.getElementById("lab");
+  labDiv.innerHTML="";
+  lab.forEach(el=>{
+    const div=document.createElement("div");
+    div.className="item";
+    div.textContent=el;
+    labDiv.appendChild(div);
+  });
+}
+
+// Hilfsfunktion: Kombination alphabetisch sortieren
+function sortedCombo(a, b){
+  return [a,b].sort().join("+");
+}
+
+// Mischen
+function mix(){
+  if(lab.length!==2){
+    document.getElementById("result").textContent="Wähle zwei Stoffe!";
+    return;
+  }
+  let combo = sortedCombo(lab[0], lab[1]);
+  let result = recipes[combo];
+  if(result){
+    document.getElementById("result").textContent="✨ Neuer Stoff entdeckt: "+result;
+    
+    if(!elements.includes(result)){
+      elements.push(result);
+    }
+    
+    if(!discovered.includes(result)){
+      discovered.push(result);
+      renderDiscoveries();
+    }
+    
+    renderElements();
+
+    // Spiel abgeschlossen prüfen
+    if(result === "Paulas Chemie Experiment"){
+      document.getElementById("gameComplete").textContent = "🎉 Du hast es geschafft!";
+    }
+
+  } else {
+    document.getElementById("result").textContent="❌ Keine Reaktion.";
+  }
+  clearLab();
+}
+
+// Labor leeren
+function clearLab(){
+  lab=[];
+  renderLab();
+}
+
+// Entdeckungen rendern
+function renderDiscoveries(){
+  const discoveriesDiv=document.getElementById("discoveries");
+  discoveriesDiv.innerHTML="";
+  discovered.forEach(d=>{
+    const div=document.createElement("div");
+    div.className="discovered";
+    div.textContent=d;
+    discoveriesDiv.appendChild(div);
+  });
+}
+
+// Initial render
+renderElements();
+</script>
+
+</body>
+</html>
