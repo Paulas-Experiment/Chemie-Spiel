@@ -1,2 +1,2 @@
 # Chemie-Spiel
-Paulas Chemie Experiment
+Paulas Chemie Experiment, DAS SPIEL
